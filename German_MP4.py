@@ -393,7 +393,7 @@ if __name__ == '__main__':
                 print("\nResult:\t{}\n".format(evaluator.evaluate(expression)))
         except ValueError:
             print("\nResult: Invalid\n")
-        # except IndexError:
-        #     print("\nResult: Invalid\n")
+        except IndexError:
+            print("\nResult: Invalid\n")
         except Exception as e:
             e.with_traceback()
