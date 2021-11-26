@@ -5,6 +5,7 @@ import string
 class NotationConverter:
     def identify(self, expression: str) -> int:
         """Identifies the expression if it's either in infix (1), prefix (2), or postfix(3) notation"""
+        expression = expression.rstrip().lstrip()
         if expression[-1] in {'+', '-', '/', '*', '^'}:
             return 3
         elif expression[0] in {'+', '-', '/', '*', '^'}:
@@ -24,6 +25,7 @@ class NotationConverter:
                 current notation of expression
 
         """
+        expression = expression.lstrip().rstrip()
         if flag == 1:
             return (self.__convertToPrefix(
                 expression, flag), self.__convertToPostfix(expression, flag))
@@ -40,8 +42,8 @@ class NotationConverter:
     def __convertToPrefix(self, expression: str, flag: int) -> str:
         if flag == 1:
             # Infix to Prefix
-            expression = "".join(reversed(expression.replace(
-                '(', '~').replace(')', '(').replace('~', ')')))
+            expression = ("".join(reversed(expression)).replace(
+                '(', '~').replace(')', '(').replace('~', ')'))
             return "".join(list(reversed(self.__convertToPostfix(expression, flag))))
 
         elif flag == 3:
@@ -149,7 +151,7 @@ class NotationConverter:
                             operand += expression[i]
                             i = self.__lex(i)
 
-                    postfix += ' ' + operand + ' '
+                    postfix += ' ' + operand
 
                 elif expression[i] == '(':
 
@@ -159,8 +161,7 @@ class NotationConverter:
                 elif expression[i] == ')':
 
                     while stack[-1] != '(':
-                        postfix += stack[-1]
-                        stack.pop()
+                        postfix += ' ' + stack.pop()
 
                     stack.pop()
                     i = self.__lex(i)
@@ -170,16 +171,15 @@ class NotationConverter:
                     if expression[i] == '^':
 
                         while self.__identifyTier(expression[i]) <= self.__identifyTier(stack[-1]):
-                            postfix += stack[-1]
-                            stack.pop()
+                            postfix += ' ' + stack.pop()
+                            i = self.__lex(i)
 
                     else:
 
                         while self.__identifyTier(expression[i]) < self.__identifyTier(stack[-1]):
-                            postfix += stack[-1]
-                            stack.pop()
+                            postfix += ' ' + stack.pop()
 
-                    stack.append(' ' + expression[i])
+                    stack.append(expression[i])
                     i = self.__lex(i)
 
                 elif expression[i].isspace():
@@ -189,7 +189,7 @@ class NotationConverter:
                 else:
                     raise ValueError()
 
-            return postfix.lstrip()
+            return (postfix + ' '.join(stack[1:])).lstrip()
 
         elif flag == 2:
             # Prefix to Postfix
@@ -198,8 +198,8 @@ class NotationConverter:
 
             while i >= 0:
                 if expression[i] in {'+', '-', '/', '*', '^'}:
-                    stack.append(' ' + stack.pop() +
-                                 stack.pop() + expression[i])
+                    stack.append(stack.pop() +
+                                 stack.pop() + ' ' + expression[i])
                     i = self.__rlex(i)
                 elif expression[i].isalnum():
                     operand = expression[i]
@@ -244,16 +244,8 @@ class InfixEvaluator:
         self.index: int = 0
 
     def evaluate(self, expression: str) -> int:
-        operands = expression.split(' ')
-        keys = string.ascii_lowercase
-        symbols = {}
 
-        for i in range(0, len(operands)):
-            if operands[i].isnumeric():
-                if i < 27:
-                    symbols[keys[i]] = operands[i]
-                else:
-                    symbols[keys[i]*i] = operands[i]
+        expression = expression.lstrip().rstrip()
 
         notation = self.converter.identify(expression)
 
