@@ -10,12 +10,8 @@ class ExpressionParser:
         # Current token being examined
         self.currentToken = self.string[self.index]
 
-        # Statement below checks whether string has a variable and an operator
-        try:
-            # Next token to be examined
+        if self.length > 1:
             self.nextToken = self.string[self.index + 1]
-        except IndexError:
-            raise ValueError()
 
         self.start()  # Starts parsing
 
