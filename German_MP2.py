@@ -88,7 +88,7 @@ class PalindromeParser:
     def start(self):
         """Initiates parsing procedure"""
         self.palindrome()
-        # Checks if current token is the $ terminal and if there are no open expressions
+
         if self.index == self.length // 2:
             return True
         else:
